@@ -1,13 +1,26 @@
+# The following code is copied from: https://sourceforge.net/p/raspberry-gpio-python/wiki/PWM/
+# The program dims an LED using the GPIO.PWM funtion
+
+
 import time
 
 import RPi.GPIO as GPIO
 
-GPIO.setmode(GPIO.BCM)
+GPIO.setmode(GPIO.BOARD)
+GPIO.setup(12, GPIO.OUT)
 
-GPIO.setup(18, GPIO.OUT)
+p = GPIO.PWM(12, 50)  # channel=12 frequency=50Hz
+p.start(0)
+try:
+    while 1:
+        for dc in range(0, 101, 5):
+            p.ChangeDutyCycle(dc)
+            time.sleep(0.1)
+        for dc in range(100, -1, -5):
+            p.ChangeDutyCycle(dc)
+            time.sleep(0.1)
+except KeyboardInterrupt:
+    pass
 
-while True:
-    GPIO.output(18, GPIO.LOW)
-    time.sleep(1.0)
-    GPIO.output(18, GPIO.HIGH)
-    time.sleep(1.0)
+p.stop()
+GPIO.cleanup()
